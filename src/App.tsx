@@ -1,57 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import { Slide, Counter } from './features/index';
 import './App.css';
+import { Step } from './models/Step';
+import AwesomeSlider from 'react-awesome-slider';
+import 'react-awesome-slider/dist/styles.css';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  getByAmount, setSelected, getByAmountAsync, selectedCountries, setSelectedAsync,
+} from './features/slide/SlideSlice';
 
 function App() {
+  const [steps, setSteps] = useState(5);
+  const [slide, setSlide] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+
+  const countries = useSelector(selectedCountries);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getByAmountAsync(steps))
+  }, countries);
+
+  const next = () => {
+    if (slide + 1 == countries.length) {
+      setShowResult(true);
+      return;
+    }
+    setSlide(slide + 1);
+  }
+
+  const slides = countries.map((item: any, i) =>
+    (<div key={i}>
+      <Slide stepUpdated={(amount) => {
+
+        dispatch(setSelectedAsync(i, item, amount));
+        next();
+      }} country={item} />
+    </div>));
+  const results = countries.map((item: any, i) =>
+    (<div key={item.id}>
+      <h1>{item.name}</h1>
+      {item.isCorrect ? 'you got this one' : `wrong answer :`}
+    </div>));
+
+  if (countries.length == 0) {
+    return (<div>Still loading countries</div>)
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    !showResult ?
+      <AwesomeSlider
+        selected={slide}
+      >
+        {slides}
+      </AwesomeSlider> :
+      <div>{results}</div>
   );
 }
 
