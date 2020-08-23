@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import styles from './Slide.module.css';
+import styles from './Game.module.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import {
   getByAmount, setSelected, getByAmountAsync, selectedCountries, setSelectedAsync,
@@ -18,10 +18,10 @@ export function Game(props: any) {
   const countries = useSelector(selectedCountries);
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (countries.length == 0) {
       dispatch(getByAmountAsync(steps))
-    }      
+    }
   });
 
   if (countries.length == 0) {
@@ -39,27 +39,32 @@ export function Game(props: any) {
   const slides = countries.map((item: any, i) =>
     (<div key={i}>
       <Slide stepUpdated={(amount) => {
-        debugger;
         dispatch(setSelectedAsync(i, item, amount));
         next();
       }} country={item} />
     </div>));
 
-  const results = countries.map((item: any, i) =>
-    (<div key={item.id}>
+  const results = countries.filter((item: any) => !!item.message).map((item: any) =>
+    (<div key={item.id} className={styles.row + (!item.isCorrect ? ' ' + styles.wrong : '')}>
       <h1>{item.name}</h1>
-      {item.isCorrect ? 'you got this one' : `wrong answer :`}
+      <p>{`Your guess was, ${item.userTemperatureValue} degrees`}</p>
+      <p>{item.message}</p>
     </div>));
 
   return (
     !showResult ?
-      <AwesomeSlider
-        selected={slide}
-        clickNext ={()=>{
-          next();
-        }}>
-        {slides}
-      </AwesomeSlider> :
+      <div className={styles.container}>
+        <AwesomeSlider
+          selected={slide}
+          clickNext={() => {
+            next();
+          }}>
+          {slides}
+        </AwesomeSlider>
+        <hr></hr>
+        <div >{results}</div>
+      </div>
+      :
       <div>{results}</div>
   );
 }

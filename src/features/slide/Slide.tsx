@@ -6,51 +6,36 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 export function Slide(props: { stepUpdated: (amount: number) => any, country: any }) {
   return (
     <div>
-      <div className={styles.row}>
+      <div className={styles.col}>
         <span className={styles.value}>{props.country.name}</span>
-      </div>
-      <div className={styles.row}>
         <Formik
-          initialValues={{ tempature: '' }}
-          validate={values => {
+          initialValues={{ temperature: '' }}
+          validate={(values: { temperature: string; }) => {
             const errors: any = {};
-            if (!values.tempature) {
-              errors.tempature = 'Required';
+            if (!values.temperature) {
+              errors.temperature = 'Required';
             } else if (
-              !/^[0-9\-]{1,2}$/i.test(values.tempature)
+              !/^[0-9\-]{1,3}$/i.test(values.temperature)
             ) {
-              errors.tempature = `Invalid tempature, Please enter in celsius degree for ${props.country.name}`;
+              errors.temperature = `Invalid temperature, Please enter in celsius degree (-40 , 60) `;
             }
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            debugger;
-            props.stepUpdated(parseInt(values.tempature));
+          onSubmit={(values: { temperature: string; }, { setSubmitting }: any) => {
+            props.stepUpdated(parseInt(values.temperature));
           }}
         >
-          {({ isSubmitting }) => (
+          {() => (
             <Form>
-              <Field type="number" name="tempature"  className={styles.textbox}  />
-              <ErrorMessage name="tempature" component="div" />
-              <button type="submit" className={styles.button} disabled={isSubmitting}>
-                Bet Tempature
-           </button>
+              <Field type="number" name="temperature" className={styles.textbox} />
+              <ErrorMessage name="temperature" component="div" />
+              <button type="submit" className={styles.button}>
+                Bet temperature
+            </button>
             </Form>
           )}
         </Formik>
 
-
-        {/* <input
-          className={styles.textbox}
-          aria-label="Set your bet tempature in state"
-          value={tempatureAmount}
-          onChange={e => setTempatureAmount(e.target.value)}
-        />
-        <button
-          className={styles.button}
-          onClick={() => props.stepUpdated(parseInt(tempatureAmount))}>
-          Bet Weather
-        </button> */}
       </div>
     </div>
   );

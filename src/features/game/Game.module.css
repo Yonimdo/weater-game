@@ -1,12 +1,20 @@
 .row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
-
+.container{
+  width: 40vw;
+  min-width: 400px;
+  margin:auto auto;
+}
+.wrong{
+  color:red;
+}
 .row:not(:last-child) {
   margin-bottom: 16px;
 }
+
 
 .value {
   font-size: 78px;

@@ -4,15 +4,23 @@
   justify-content: center;
 }
 
+.col {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+  min-height: 300px;
+}
+
 .row:not(:last-child) {
   margin-bottom: 16px;
 }
 
 .value {
-  font-size: 78px;
+  font-size: 32px;
   padding-left: 16px;
   padding-right: 16px;
-  margin-top: 2px;
+  margin: 40px;
   font-family: 'Courier New', Courier, monospace;
 }
 

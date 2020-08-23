@@ -15,15 +15,18 @@ export const countriesSlice = createSlice({
   name: 'countries',
   initialState,
   reducers: {
-    setSelected: (state, action: PayloadAction<{ index: number, item: any, amount: number, delta: number }>) => {
-      state.selected[action.payload.index].userTempatureValue = action.payload.amount;
-      state.selected[action.payload.index].isCorrect = action.payload.delta < 5 || action.payload.delta > -5;
+    setSelected: (state:CountriesState, action: PayloadAction<{ index: number, item: any, amount: number, delta: number, message:string }>) => {
+      state.selected[action.payload.index].userTemperatureValue = action.payload.amount;
+      state.selected[action.payload.index].isCorrect = action.payload.delta < 5 && action.payload.delta > -5;
+      state.selected[action.payload.index].message = (state.selected[action.payload.index].isCorrect) ?
+      `You Got this one! The real weather forcast is ${action.payload.message}`: 
+      `no Its actually feels like ${action.payload.message}` 
     },
     // Use the PayloadAction type to declare the contents of `action.payload`
-    getAll: (state, action: PayloadAction<Array<any>>) => {
+    getAll: (state:CountriesState, action: PayloadAction<Array<any>>) => {
       state.values = action.payload;
     },
-    getByAmount: (state, action: PayloadAction<number>) => {
+    getByAmount: (state:CountriesState, action: PayloadAction<number>) => {
       const index = Math.floor(Math.random() * (state.values.length - action.payload));
       state.selected = state.values.slice(index, index + action.payload);
     },
@@ -48,14 +51,15 @@ export const getByAmountAsync = (amount: number): AppThunk => dispatch => {
 
 export const setSelectedAsync = (index: number, item: any, amount: number): AppThunk => dispatch => {
   
-  fetch(`http://api.openweathermap.org/data/2.5/weather?id=${item.id}&appid=9cff733aee57cb05b63dd4f731c46bc4&units=metric`)
+  fetch(`https://api.openweathermap.org/data/2.5/weather?id=${item.id}&appid=9cff733aee57cb05b63dd4f731c46bc4&units=metric`)
     .then(res => res.json())
     .catch(e => {
       debugger
     }).then(res => {
-      debugger;
+      
       const delta = amount - res.main.temp;
-      dispatch(setSelected({ index, item, amount, delta }));
+      debugger;
+      dispatch(setSelected({ index, item, amount, delta, message:`${res.main.feels_like}, and ${res.weather[0].description} with ${res.visibility} visibility`}));
     });
 
 }
